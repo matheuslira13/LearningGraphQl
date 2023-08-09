@@ -27,6 +27,18 @@ module.exports = {
   },
   Mutation: {
     addUser(_, args) {
+      const { email } = args;
+
+      const existeUsuario = dbUser.usuarios.some(
+        (item) => item.email === email
+      );
+
+      if (existeUsuario) {
+        throw new Error(
+          `Usuario ja existente no mock fake nome : ${args.nome}`
+        );
+      }
+
       const newUser = {
         ...args,
         id: generatorId(dbUser.usuarios),

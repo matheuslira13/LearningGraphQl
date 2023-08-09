@@ -9,6 +9,11 @@ const schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   schema,
+  formatError: (err) => {
+    if (err.message.startsWith("Usuario ja existente no mock fake nome")) {
+      return new Error(err.message);
+    }
+  },
 });
 server.listen().then(({ url }) => {
   console.log(`Server ready at ${url}`);
