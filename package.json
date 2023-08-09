@@ -1,0 +1,20 @@
+{
+  "name": "learning",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.0",
+    "@graphql-tools/schema": "^10.0.0",
+    "apollo-server": "^3.12.0",
+    "graphql": "^16.7.1",
+    "graphql-tools": "^9.0.0"
+  }
+}

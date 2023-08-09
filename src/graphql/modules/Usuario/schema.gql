@@ -1,0 +1,16 @@
+type User {
+  idade: Int
+  salario: Float
+  nome: String
+  id: ID
+  perfil: Perfil
+}
+
+type Query {
+  usuario(id: Int): User
+  usuarios: [User]
+}
+
+type Mutation {
+  addUser(nome: String, idade: Int, salario: Float): User!
+}
