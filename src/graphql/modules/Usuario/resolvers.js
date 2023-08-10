@@ -62,5 +62,20 @@ module.exports = {
       console.log("indice ", dbUser.usuarios);
       return newUser;
     },
+    deleteUser(_, args) {
+      const { id, email } = args.filtro;
+      if (id) {
+        const usuarioEncontrado = dbUser.usuarios.find((item) => item.id == id);
+
+        dbUser.usuarios = dbUser.usuarios.filter((item) => item.id != id);
+        return !!usuarioEncontrado;
+      } else {
+        const usuarioEncontrado = dbUser.usuarios.find(
+          (item) => item.email == email
+        );
+        dbUser.usuarios = dbUser.usuarios.filter((item) => item.email != email);
+        return !!usuarioEncontrado;
+      }
+    },
   },
 };
