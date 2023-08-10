@@ -27,7 +27,7 @@ module.exports = {
   },
   Mutation: {
     addUser(_, args) {
-      const { email } = args;
+      const { email } = args.data;
 
       const existeUsuario = dbUser.usuarios.some(
         (item) => item.email === email
@@ -35,17 +35,31 @@ module.exports = {
 
       if (existeUsuario) {
         throw new Error(
-          `Usuario ja existente no mock fake nome : ${args.nome}`
+          `Usuario ja existente no mock fake nome : ${args.data.nome}`
         );
       }
 
       const newUser = {
-        ...args,
+        ...args.data,
         id: generatorId(dbUser.usuarios),
         perfil: 2,
       };
       dbUser.usuarios.push(newUser);
 
+      return newUser;
+    },
+    updateUser(_, { data, id }) {
+      const usuario = dbUser.usuarios.find((item) => item.id == id);
+      const indice = dbUser.usuarios.findIndex((item) => item.id == id);
+
+      const newUser = {
+        ...usuario,
+        ...data,
+      };
+
+      dbUser.usuarios.splice(indice, 1, newUser);
+
+      console.log("indice ", dbUser.usuarios);
       return newUser;
     },
   },

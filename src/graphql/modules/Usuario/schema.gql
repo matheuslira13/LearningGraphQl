@@ -1,3 +1,10 @@
+input UserInput {
+  nome: String
+  idade: Int
+  salario: Float
+  email: String
+}
+
 type User {
   idade: Int
   salario: Float
@@ -13,5 +20,6 @@ type Query {
 }
 
 type Mutation {
-  addUser(nome: String, idade: Int, salario: Float, email: String): User!
+  addUser(data: UserInput): User!
+  updateUser(id: ID!, data: UserInput): User!
 }
