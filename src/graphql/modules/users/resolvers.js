@@ -1,3 +1,5 @@
+const generator = require("../../../helpers/generator");
+
 module.exports = {
   User: {
     async tasks(user, _, context) {
@@ -9,17 +11,22 @@ module.exports = {
     async user(_, { login }, context) {
       const userFound =
         await context.dataSources.UserRegisterService.getUserByLogin(login);
+
       if (userFound) {
+        userFound.token = generator.createToken(userFound.id);
+
         return userFound;
       }
 
       const { login: LoginGit, avatar_url } =
         await context.dataSources.GITHUBService.getUser(login);
 
-      return await context.dataSources.UserRegisterService.addUser({
+      const newUser = await context.dataSources.UserRegisterService.addUser({
         LoginGit,
         avatar_url,
       });
+      newUser.token = generator.createToken(newUser.id);
+      return newUser;
     },
   },
 };
