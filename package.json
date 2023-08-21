@@ -4,10 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "sucrase-node src/index.ts"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "sucrase": "^3.34.0"
   },
   "dependencies": {
     "@graphql-tools/load-files": "^7.0.0",
