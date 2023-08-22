@@ -1,3 +1,7 @@
+import { PubSub } from "graphql-subscriptions";
+
+const pub = new PubSub();
+
 interface User {
   id: Number;
   name: string;
@@ -13,10 +17,11 @@ export default {
     users: () => dataUsers,
   },
   Mutation: {
-    createUser: (__, args, context) => {
+    createUser: (__: any, args: any, context: any) => {
       const newUser = { ...args.data, id: dataUsers.length + 1 };
       dataUsers.push(newUser);
-      context.pub.publish(USER_LISTENING, {
+      console.log("teste", newUser);
+      pub?.publish(USER_LISTENING, {
         userListening: newUser,
       });
       return newUser;
@@ -26,8 +31,8 @@ export default {
     //nao e função e objeto
     userListening: {
       //aqui sim e função
-      subscribe: (obj, args, context) => {
-        return context.pub.asyncIterator([USER_LISTENING]);
+      subscribe: (_: any, __: any, context: any) => {
+        return pub?.asyncIterator([USER_LISTENING]);
       },
     },
   },

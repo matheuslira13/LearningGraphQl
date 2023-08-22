@@ -1,32 +1,59 @@
 import { ApolloServer } from "@apollo/server";
-import { PubSub } from "graphql-subscriptions";
-import { startStandaloneServer } from "@apollo/server/standalone";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { createServer } from "http";
 import express from "express";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { WebSocketServer } from "ws";
-
-import { createServer } from "http";
+import { useServer } from "graphql-ws/lib/use/ws";
+import bodyParser from "body-parser";
+import cors from "cors";
 import resolvers from "./resolvers";
 import { typeDefs } from "./schemas";
-import { useServer } from "graphql-ws/lib/use/ws";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { PubSub } from "graphql-subscriptions";
 
-const pub = new PubSub();
-const app = express();
-const httpServer = createServer(app);
-const schema = makeExecutableSchema({ typeDefs, resolvers });
+(async () => {
+  const pub = new PubSub();
+  const app = express();
+  const httpServer = createServer(app);
 
-const server = new ApolloServer({
-  schema,
-});
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-async function call() {
-  const { url } = await startStandaloneServer(server, {
-    context: async () => ({ pub }),
-    listen: { port: 4000 },
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: "/graphql",
   });
 
-  console.log(`Esta rodando ${url}`);
-}
+  const serverCleanup = useServer({ schema }, wsServer);
 
-call();
+  const server = new ApolloServer({
+    schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
+  });
+
+  await server.start();
+
+  app.use(
+    "/graphql",
+    cors<cors.CorsRequest>(),
+    bodyParser.json(),
+    expressMiddleware(server, {
+      context: async () => ({ pub, show: "teste" }),
+    })
+  );
+
+  httpServer.listen(4000, () => {
+    console.log("Server runing on 4000/graphql localhost");
+  });
+})();
