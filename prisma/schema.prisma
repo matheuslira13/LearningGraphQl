@@ -8,16 +8,17 @@ datasource db {
 }
 
 model Users {
-  id         Int    @id @default(autoincrement())
-  login      String @unique
+  id         Int       @id @default(autoincrement())
+  login      String    @unique
   avatar_url String
-  tasks      Task[]
+  token      String?
+  pokemons   Pokemos[]
 }
 
-model Task {
-  id       Int    @id @default(autoincrement())
-  title    String
-  subtitle String
-  user     Users? @relation(fields: [userId], references: [id])
-  userId   Int?
+model Pokemos {
+  pokeId  Int    @id @default(autoincrement())
+  name    String
+  ability String
+  user    Users? @relation(fields: [userId], references: [id])
+  userId  Int?
 }

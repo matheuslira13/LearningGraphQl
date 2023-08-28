@@ -1,0 +1,19 @@
+input PokemonInput {
+  name: String
+  ability: String
+}
+
+type Pokemons {
+  pokeId: Int
+  name: String
+  ability: String
+}
+type Query {
+  pokemons: [Pokemons]
+  getPokemonById(userID: Int, pokeId: Int): Pokemons
+}
+type Mutation {
+  addPokemon(data: PokemonInput): Pokemons
+  updatePokemon(userID: Int, pokeId: Int, data: PokemonInput): Pokemons
+  deletePokemon(userID: Int, pokeId: Int): String
+}

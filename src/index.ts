@@ -8,9 +8,10 @@ import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import bodyParser from "body-parser";
 import cors from "cors";
-import resolvers from "./resolvers";
-import { typeDefs } from "./schemas";
+import { resolvers, typeDefs } from "./graphql/export";
+
 import { PubSub } from "graphql-subscriptions";
+import { generator } from "./helpers/generator";
 
 (async () => {
   const pub = new PubSub();
@@ -21,7 +22,7 @@ import { PubSub } from "graphql-subscriptions";
 
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: "/graphql",
+    path: "/",
   });
 
   const serverCleanup = useServer({ schema }, wsServer);
@@ -45,11 +46,28 @@ import { PubSub } from "graphql-subscriptions";
   await server.start();
 
   app.use(
-    "/graphql",
+    "/",
     cors<cors.CorsRequest>(),
     bodyParser.json(),
     expressMiddleware(server, {
-      context: async () => ({ pub, show: "teste" }),
+      context: async ({ req }) => ({
+        pub,
+        show: "teste",
+        validate() {
+          const token = req.headers.authorization;
+
+          try {
+            //@ts-ignore
+            const { id } = generator.verifyToken(token);
+
+            return id;
+          } catch (error) {
+            // throw new NoPermissionError("Voce nao esta autenticado");
+
+            console.log("Voce nao esta autenticado", error);
+          }
+        },
+      }),
     })
   );
 

@@ -1,0 +1,11 @@
+type User {
+  id: Int
+  login: String
+  avatar_url: String
+  pokemons: [Pokemons]
+  token: String
+}
+
+type Query {
+  user(login: String): User
+}
